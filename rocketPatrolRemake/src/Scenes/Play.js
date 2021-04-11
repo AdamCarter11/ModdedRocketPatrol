@@ -31,16 +31,34 @@ class Play extends Phaser.Scene{
         keyF = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
         keyR = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
 
-        this.anim.create({key: 'explode', frames: this.anim.generateFrameNumbers('explosion',{start: 0, end: 7, first:0}),frameRate: 30});
+        this.anims.create({key: 'explode', frames: this.anims.generateFrameNumbers('explosion',{start: 0, end: 7, first:0}),frameRate: 15});
 
+        this.p1Score = 0;
+        let scoreConfig = {fontFamily: 'Courier', fontSize: '28px', backgroundColor: '#F3B141', color: '#843605', align: 'right', padding:{top: 5, bottom: 5,}, fixedWidth: 100}
+        this.scoreLeft = this.add.text(borderUISize + boarderPadding, borderUISize + boarderPadding*2, this.p1Score,scoreConfig);
+
+        this.gameOver = false;
+        scoreConfig.fixedWidth = 0;
+        this.clock = this.time.delayedCall(game.settings.gameTimer, ()=> {this.add.text(game.config.width/2, game.config.height/2, 'GAME OVER', scoreConfig).setOrigin(0.5);
+        this.add.text(game.config.width/2,game.config.height/2+64, 'Fire to (R)estart or <- for menu', scoreConfig).setOrigin(0.5);
+        this.gameOver = true;
+        }, null, this);
     }
     update(){
+        if(this.gameOver && (Phaser.Input.Keyboard.JustDown(keyR) || Phaser.Input.Keyboard.JustDown(keyF))){
+            this.scene.restart();
+        }
+        if(this.gameOver && Phaser.Input.Keyboard.JustDown(keyLEFT)){
+            this.scene.start("menuScene");
+        }
         this.starfield.tilePositionX -= 4; //this lets the background scroll (could also be done with the y)
-        this.p1Rocket.update();
 
-        this.ship01.update();
-        this.ship02.update();
-        this.ship03.update();
+        if(!this.gameOver){
+            this.p1Rocket.update();
+            this.ship01.update();
+            this.ship02.update();
+            this.ship03.update();
+        }
 
         if(this.checkCollision(this.p1Rocket, this.ship01)){
             //ship 1 collision
@@ -68,12 +86,15 @@ class Play extends Phaser.Scene{
     }
     shipExplode(ship){
         ship.alpha = 0;
-        let boom = this.add.sprite(ship.x,ship.y,'explosion').setOrigin(0,0);
-        boom.anim.play('explode');
+        let boom = this.add.sprite(ship.x, ship.y, 'explosion').setOrigin(0, 0);
+        this.sound.play('explosion');
+        boom.anims.play('explode');
         boom.on('animationcomplete',()=>{
             ship.reset();
             ship.alpha = 1;
             boom.destroy();
         });
+        this.p1Score += ship.points;
+        this.scoreLeft.text = this.p1Score;
     }
 }
