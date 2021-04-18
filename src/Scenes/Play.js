@@ -44,9 +44,7 @@ class Play extends Phaser.Scene{
         this.gameOver = true;
         }, null, this);
 
-
-        let timeConfig = {fontFamily: 'Courier', fontSize: '28px', backgroundColor: '#F3B141', color: '#843605', align: 'right', padding:{top: 5, bottom: 5,}, fixedWidth: 100}
-        this.timeLeft = this.add.text(borderUISize + boarderPadding + 100, borderUISize + boarderPadding*3, this.clock,timeConfig);
+        this.timeLeft = this.add.text(borderUISize + boarderPadding + 100, borderUISize + boarderPadding*2, this.p1Score+20,scoreConfig);
     }
     update(){
         if(this.gameOver && (Phaser.Input.Keyboard.JustDown(keyR) || Phaser.Input.Keyboard.JustDown(keyF))){
