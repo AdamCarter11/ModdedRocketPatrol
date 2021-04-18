@@ -44,8 +44,8 @@ class Play extends Phaser.Scene{
         this.gameOver = true;
         }, null, this);
 
-        
-        let timeConfig = {fontFamily: 'Courier', fontSize: '28px', backgroundColor: '#F3B141', color: '#843605', align: 'right', padding:{top: 5, bottom: 5,}, fixedWidth: 100}
+
+        let timeConfig = {fontFamily: 'Courier', fontSize: '28px', backgroundColor: '#F3B141', color: '#843605', align: 'left', padding:{top: 5, bottom: 5,}, fixedWidth: 100}
         this.timeLeft = this.add.text(borderUISize + boarderPadding + 10, borderUISize + boarderPadding*2, this.clock,timeConfig);
     }
     update(){
