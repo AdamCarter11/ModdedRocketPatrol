@@ -44,7 +44,7 @@ class Play extends Phaser.Scene{
         this.gameOver = true;
         }, null, this);
 
-        this.timeLeft = this.add.text(borderUISize + boarderPadding + 60, borderUISize + boarderPadding*2, this.p1Score,scoreConfig);
+        this.timeLeft = this.add.text(borderUISize + boarderPadding - 60, borderUISize + boarderPadding*2, this.p1Score,scoreConfig);
     }
     update(){
         if(this.gameOver && (Phaser.Input.Keyboard.JustDown(keyR) || Phaser.Input.Keyboard.JustDown(keyF))){
