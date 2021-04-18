@@ -44,7 +44,7 @@ class Play extends Phaser.Scene{
         this.gameOver = true;
         }, null, this);
 
-        this.timeLeft = this.add.text(borderUISize + boarderPadding - 5, borderUISize + boarderPadding*2, 'Time: ' + this.clock,scoreConfig);
+        this.timeLeft = this.add.text(borderUISize + boarderPadding - 5, borderUISize + boarderPadding*2, 'Time: ' + this.clock.time,scoreConfig);
 
     }
     update(){
