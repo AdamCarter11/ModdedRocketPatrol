@@ -15,3 +15,4 @@ class SpaceShip extends Phaser.GameObjects.Sprite{
         this.x = game.config.width;
     }
 }
+//Spaceship is the enemy

@@ -43,6 +43,9 @@ class Play extends Phaser.Scene{
         this.add.text(game.config.width/2,game.config.height/2+64, 'Fire to (R)estart or <- for menu', scoreConfig).setOrigin(0.5);
         this.gameOver = true;
         }, null, this);
+        
+        let timeConfig = {fontFamily: 'Courier', fontSize: '28px', backgroundColor: '#F3B141', color: '#843605', align: 'right', padding:{top: 5, bottom: 5,}, fixedWidth: 100}
+        this.timeLeft = this.add.text(borderUISize + boarderPadding + 10, borderUISize + boarderPadding*2, this.clock,timeConfig);
     }
     update(){
         if(this.gameOver && (Phaser.Input.Keyboard.JustDown(keyR) || Phaser.Input.Keyboard.JustDown(keyF))){
