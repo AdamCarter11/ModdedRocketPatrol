@@ -6,13 +6,16 @@ class Play extends Phaser.Scene{
 
     preload(){
         this.load.image('starfield','./assets/starfield.png');
+        this.load.image('yellowStars','./assets/yStarfield.png');
+        this.load.image('meteor','./assets/meteor.png');
         this.load.image('rocket','./assets/BasicShip.png');
         this.load.image('enemy','./assets/BasicEnemy.png');
         this.load.spritesheet('explosion', './assets/explosion.png', {frameWidth: 64, frameHeight: 64, startFrame: 0, endFrame: 7});
     }
-
     create(){
         this.starfield = this.add.tileSprite(0,0,640,480,'starfield').setOrigin(0,0);
+        this.yellowStars = this.add.tileSprite(0,0,640,480,'yellowStars').setOrigin(0,0);
+
         this.p1Rocket = new Rocket(this, game.config.width/2, game.config.height-borderUISize-boarderPadding, 'rocket');
         
         this.ship01 = new SpaceShip(this,game.config.width + borderUISize * 6, borderUISize*4, 'enemy', 0,30).setOrigin(0,0);
@@ -39,29 +42,47 @@ class Play extends Phaser.Scene{
 
         this.gameOver = false;
         scoreConfig.fixedWidth = 0;
-        this.clock = this.time.delayedCall(game.settings.gameTimer, ()=> {this.add.text(game.config.width/2, game.config.height/2, 'GAME OVER', scoreConfig).setOrigin(0.5);
-        this.add.text(game.config.width/2,game.config.height/2+64, 'Fire to (R)estart or <- for menu', scoreConfig).setOrigin(0.5);
-        this.gameOver = true;
-        }, null, this);
-
-        this.timeLeft = this.add.text(borderUISize + boarderPadding - 5, borderUISize + boarderPadding*2, 'Time: ' + this.game.time.totalElapsedSeconds(), scoreConfig);
+        
+        this.clock = this.time.delayedCall(30000, ()=> {this.p1Rocket.movementSpeed = 4}, null, this);
+        
+        this.timeLeft = this.add.text(borderUISize + boarderPadding + 410, borderUISize + boarderPadding*2, 'Time: ', scoreConfig);
+        this.timeVar = 0;
     }
-    update(){
+    update(time,delta){
+        
+        //restarting mechanics
         if(this.gameOver && (Phaser.Input.Keyboard.JustDown(keyR) || Phaser.Input.Keyboard.JustDown(keyF))){
             this.scene.restart();
         }
         if(this.gameOver && Phaser.Input.Keyboard.JustDown(keyLEFT)){
             this.scene.start("menuScene");
         }
+
+        //background movement
         this.starfield.tilePositionX -= 4; //this lets the background scroll (could also be done with the y)
+        this.yellowStars.tilePositionX -= 2;
+
+        //calculating time passed
+        this.timeLeft.setText("Time: " + Math.round(this.timeVar*.001));
 
         if(!this.gameOver){
             this.p1Rocket.update();
             this.ship01.update();
             this.ship02.update();
             this.ship03.update();
+            this.timeVar = this.timeVar + delta;
         }
 
+        //Time based stuff
+        if(this.timeVar >= game.settings.gameTimer){
+            let scoreConfig = {fontFamily: 'Courier', fontSize: '28px', backgroundColor: '#F3B141', color: '#843605', align: 'right', padding:{top: 5, bottom: 5,}, fixedWidth: 100}
+            scoreConfig.fixedWidth = 0;
+            this.add.text(game.config.width/2, game.config.height/2, 'GAME OVER', scoreConfig).setOrigin(0.5);
+            this.add.text(game.config.width/2,game.config.height/2+64, 'Fire to (R)estart or <- for menu', scoreConfig).setOrigin(0.5);
+            this.gameOver = true;
+        }
+
+        //if player collides with ship
         if(this.checkCollision(this.p1Rocket, this.ship01)){
             //ship 1 collision
             this.p1Rocket.reset();
@@ -78,6 +99,8 @@ class Play extends Phaser.Scene{
             this.shipExplode(this.ship03);
         }
     }
+
+    //checking collision
     checkCollision(rocket, enemy){
         if(rocket.x < enemy.x + enemy.width && rocket.x + rocket.width > enemy.x && rocket.y < enemy.y + enemy.height && rocket.height + rocket.y > enemy.y){
             return true;
@@ -86,6 +109,8 @@ class Play extends Phaser.Scene{
             return false;
         }
     }
+
+    //triggers if player collides with enemy
     shipExplode(ship){
         ship.alpha = 0;
         let boom = this.add.sprite(ship.x, ship.y, 'explosion').setOrigin(0, 0);
@@ -98,5 +123,11 @@ class Play extends Phaser.Scene{
         this.p1Score += ship.points;
         this.scoreLeft.text = this.p1Score;
         this.sound.play('explosion');
+        if(this.timeVar>=5000){
+            this.timeVar -= 5000;
+        }
+        else{
+            this.timeVar = 0;
+        }
     }
 }
