@@ -47,9 +47,14 @@ class Play extends Phaser.Scene{
         
         this.timeLeft = this.add.text(borderUISize + boarderPadding + 410, borderUISize + boarderPadding*2, 'Time: ', scoreConfig);
         this.timeVar = 0;
+
     }
     update(time,delta){
-        
+        this.input.on('pointerdown',this.fireM, this);
+
+        if(this.input.activePointer.x >= borderUISize + boarderPadding && this.input.activePointer.x <= game.config.width - borderUISize - this.p1Rocket.width){
+            this.p1Rocket.x = this.input.activePointer.x;
+        }
         //restarting mechanics
         if(this.gameOver && (Phaser.Input.Keyboard.JustDown(keyR) || Phaser.Input.Keyboard.JustDown(keyF))){
             this.scene.restart();
@@ -109,7 +114,6 @@ class Play extends Phaser.Scene{
             return false;
         }
     }
-
     //triggers if player collides with enemy
     shipExplode(ship){
         ship.alpha = 0;
@@ -129,5 +133,10 @@ class Play extends Phaser.Scene{
         else{
             this.timeVar = 0;
         }
+    }
+    fireM(pointer,targets){
+        this.input.off('pointerdown',this.fireM,this);
+        this.p1Rocket.isFiring = true;
+        console.log("test");
     }
 }
